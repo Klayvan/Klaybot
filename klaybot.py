@@ -13,10 +13,13 @@ def read_token():
 TOKEN = read_token()
 client = commands.Bot(command_prefix = ".")
 client.remove_command('help')
-os.chdir(r'D:\coding\Klaybot')
+os.chdir(r'K:\coding\Klaybot')
 
 @client.event
 async def on_ready():
+    game = discord.Game("La programmation... Aie")
+    watch = discord.Activity(type=discord.ActivityType.watching, name="programmer... Aie")
+    await client.change_presence(activity=game)
     print('Klaybot est en ligne.')
 
 @client.command()
