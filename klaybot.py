@@ -3,6 +3,7 @@ import json
 import os
 from discord.ext import commands
 import asyncio
+from cmds import Cmds
 
 def read_token():
     with open ("token.ini","r") as f:
@@ -19,9 +20,10 @@ async def on_ready():
     #await client.change_presence(game=discord.Game(name="Etre un Dieu, Que faire ?",type=3))
     print('Klaybot est en ligne.')
 
-@client.command()
+"""@client.command()
 async def ping(ctx):
     await ctx.send('Pong! :ping_pong:')
-
+"""
+#if __name__ == '__main__':
 
 client.run(TOKEN)
