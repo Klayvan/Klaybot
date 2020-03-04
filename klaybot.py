@@ -17,13 +17,10 @@ os.chdir(r'D:\coding\Klaybot')
 
 @client.event
 async def on_ready():
-    #await client.change_presence(game=discord.Game(name="Etre un Dieu, Que faire ?",type=3))
     print('Klaybot est en ligne.')
 
-"""@client.command()
+@client.command()
 async def ping(ctx):
     await ctx.send('Pong! :ping_pong:')
-"""
-#if __name__ == '__main__':
 
 client.run(TOKEN)
