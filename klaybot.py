@@ -33,6 +33,6 @@ async def on_voice_state_update(member, before, after):
     channel = client.get_channel(685038704322281481)
     voicechannel = client.get_channel(547863579039236097)
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        await channel.send(f"Bienvenue dans le canal {voicechannel.name}")
+        await channel.send(f"Bienvenue dans le canal {voicechannel.name} {member.name}")
 
 client.run(tokendiscord.getToken())
