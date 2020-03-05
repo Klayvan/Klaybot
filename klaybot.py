@@ -28,13 +28,21 @@ cmd.roll_dice()
 cmd.echo()
 cmd.clear()
 
+newChannel = ''
+
 @client.event
 async def on_voice_state_update(member, before, after):
     guild = member.guild
+    global newChannel
+    channel = client.get_channel(685038704322281481)
     voicechannel = client.get_channel(547863579039236097)
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        channel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4)
-        await member.edit(voice_channel=channel)
+        newChannel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4)
+        await channel.send(f"{member.name} a rejoint le canal {voicechannel.name} et créé le canal {newChannel}")
+        await member.edit(voice_channel=newChannel)
+    if before.channel == newChannel and after.channel !=newChannel and len(newChannel.members)==0:
+        await channel.send(f"{member.name} a quitté le canal {newChannel}")
+        await newChannel.delete()
 
 
 client.run(tokendiscord.getToken())
