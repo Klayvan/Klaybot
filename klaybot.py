@@ -17,10 +17,20 @@ if __name__ == '__main__':
 
 @client.event
 async def on_ready():
-    game = discord.Game("La programmation... Aie")
+    #game = discord.Game("La programmation... Aie")
     watch = discord.Activity(type=discord.ActivityType.watching, name="programmer... Aie")
     await client.change_presence(activity=watch)
     print('Klaybot est en ligne.')
+
+@client.command(pass_context=True)
+@commands.has_role('Master')
+async def clear(ctx, *,amount:int):
+    channel = ctx.channel
+    messages = []
+    async for message in channel.history(limit=amount+1):
+        messages.append(message)
+    await channel.delete_messages(messages)
+    await ctx.send("Notre chat a été nettoyé")
 
 cmd = Cmds(client)
 cmd.ping()
