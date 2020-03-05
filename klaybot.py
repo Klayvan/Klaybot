@@ -34,12 +34,12 @@ newChannel = ''
 async def on_voice_state_update(member, before, after):
     guild = member.guild
     global newChannel
-    channel = client.get_channel(685038704322281481)
-    voicechannel = client.get_channel(547863579039236097)
+    channel = client.get_channel(685038704322281481) #On choisit notre salon textuel test2 dont l'ID est connue
+    voicechannel = client.get_channel(547863579039236097) #On choisit notre salon vocal qu'on veut dupliquer
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        newChannel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4)
+        newChannel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4) #On crée un nouveau canal vocal
         await channel.send(f"{member.name} a rejoint le canal {voicechannel.name} et créé le canal {newChannel}")
-        await member.edit(voice_channel=newChannel)
+        await member.edit(voice_channel=newChannel) #On déplace le membre qui a rejoint le canal dans le nouveau canal vocal créé
     if before.channel == newChannel and after.channel !=newChannel and len(newChannel.members)==0:
         await channel.send(f"{member.name} a quitté le canal {newChannel}")
         await newChannel.delete()
