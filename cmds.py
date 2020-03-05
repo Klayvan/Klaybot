@@ -26,3 +26,14 @@ class Cmds:
         @self.client.command(name='echo')
         async def echo(ctx, * ,content:str):
             await ctx.send(content)
+
+    def clear(self):
+        @self.client.command(pass_context=True,name='clear')
+        @commands.has_role('Master')
+        async def clear(ctx, *,amount:int):
+            channel = ctx.channel
+            messages = []
+            async for message in channel.history(limit=amount+1):
+                messages.append(message)
+            await channel.delete_messages(messages)
+            await ctx.send("Notre chat a été nettoyé")
