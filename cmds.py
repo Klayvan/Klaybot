@@ -21,3 +21,8 @@ class Cmds:
                 for _ in range(number_of_dice)
             ]
             await ctx.send(','.join(dice))
+
+    def echo(self):
+        @self.client.command(name='echo')
+        async def echo(ctx, * ,content:str):
+            await ctx.send(content)

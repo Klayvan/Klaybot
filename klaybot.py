@@ -25,5 +25,6 @@ async def on_ready():
 cmd = Cmds(client)
 cmd.ping()
 cmd.roll_dice()
+cmd.echo()
 
 client.run(tokendiscord.getToken())
