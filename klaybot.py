@@ -33,8 +33,8 @@ async def on_voice_state_update(member, before, after):
     guild = member.guild
     voicechannel = client.get_channel(547863579039236097)
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        await guild.create_voice_channel(f'{voicechannel.name} {member.name}')
-        #await member.edit(voice_channel=f'{voicechannel.name} {member.name}')
+        channel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}')
+        await member.edit(voice_channel=channel)
 
 
 client.run(tokendiscord.getToken())
