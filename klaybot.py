@@ -33,7 +33,7 @@ async def on_voice_state_update(member, before, after):
     guild = member.guild
     voicechannel = client.get_channel(547863579039236097)
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        channel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}')
+        channel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4)
         await member.edit(voice_channel=channel)
 
 
