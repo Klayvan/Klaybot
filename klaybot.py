@@ -31,21 +31,26 @@ cmd.echo()
 cmd.clear()
 cmd.help()
 
-newChannel = ''
+clone_channel = ''
+list_clone = []
 
 @client.event
 async def on_voice_state_update(member, before, after):
     guild = member.guild
-    global newChannel
+    global clone_channel
+    global list_clone
+    list_pos = list_clone.index(before.channel)
     channel = client.get_channel(685038704322281481) #On choisit notre salon textuel test2 dont l'ID est connue
     voicechannel = client.get_channel(547863579039236097) #On choisit notre salon vocal qu'on veut dupliquer
     if after.channel and after.channel == voicechannel and before.channel != voicechannel:
-        newChannel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4) #On crée un nouveau canal vocal
-        await channel.send(f"{member.name} a rejoint le canal {voicechannel.name} et créé le canal {newChannel}")
-        await member.edit(voice_channel=newChannel) #On déplace le membre qui a rejoint le canal dans le nouveau canal vocal créé
-    if before.channel == newChannel and after.channel !=newChannel and len(newChannel.members)==0:
-        await channel.send(f"{member.name} a quitté le canal {newChannel}")
-        await newChannel.delete()
+        clone_channel = await guild.create_voice_channel(f'{voicechannel.name} {member.name}', user_limit=5, category=client.get_channel(547862839369531411), position=4) #On crée un nouveau canal vocal
+        list_clone.append(clone_channel)
+        await channel.send(f"{member.name} a rejoint le canal {voicechannel.name} et créé le canal {clone_channel}")
+        await member.edit(voice_channel=clone_channel) #On déplace le membre qui a rejoint le canal dans le nouveau canal vocal créé
+    if before.channel == list_clone[list_pos] and after.channel !=list_clone[list_pos] and len(list_clone[list_pos].members)==0:
+        await channel.send(f"{member.name} a quitté le canal {list_clone[list_pos]}")
+        await list_clone[list_pos].delete()
+        del list_clone[list_pos]
 
 
 client.run(tokendiscord.getToken())
