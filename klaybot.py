@@ -39,6 +39,7 @@ async def on_voice_state_update(member, before, after):
     guild = member.guild
     global clone_channel
     global list_clone
+    list_pos = 0
     channel = client.get_channel(685038704322281481) #On choisit notre salon textuel test2 dont l'ID est connue
     voicechannel = client.get_channel(547863579039236097) #On choisit notre salon vocal qu'on veut dupliquer
     if before.channel in list_clone:
