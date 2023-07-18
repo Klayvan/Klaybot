@@ -3,13 +3,19 @@ import random
 
 import discord
 
+from discord import app_commands
 from discord.ext import commands
 
+intents = discord.Intents().all()
+
+intents.message_content = True
+intents.guilds = True
+intents.members = True
 
 INIFILE = 'klaybot.ini'
 
 
-bot = commands.Bot(command_prefix='.')
+bot = commands.Bot(command_prefix='.', intents=intents)
 bot.remove_command('help')
 
 
