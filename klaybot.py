@@ -24,11 +24,12 @@ def get_discord_token(inifile):
     config.read(inifile)
     return config['discord']['token']
 
-
+# Stocke l'ID du canal vocal temporaire
+temporary_channel_id = None
 @bot.event
 async def on_ready():
     watch = discord.Activity(type=discord.ActivityType.watching,
-                             name="programmer... Aie")
+                             name="Evolution de la machine")
     await bot.change_presence(activity=watch)
     print('Klaybot est en ligne.')
 
@@ -63,6 +64,38 @@ async def clear(ctx, *, amount: int):
         messages.append(message)
     await channel.delete_messages(messages)
     await ctx.send("Notre chat a été nettoyé")
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    global temporary_channel_id
+    
+    # Vérifie si le membre s'est connecté au canal vocal spécifié
+    if after.channel is not None and after.channel.id == 1130824483905736777:
+        guild = member.guild  # Récupère le serveur (guild) où l'événement a eu lieu
+        
+        # Vérifie si le canal vocal temporaire existe déjà
+        if temporary_channel_id is None:
+            # Crée un nouveau canal vocal temporaire en dupliquant le canal spécifié
+            original_channel = guild.get_channel(1130824483905736777)
+            new_channel = await original_channel.clone(name=f"{original_channel.name}-{member.name}")
+            
+            # Stocke l'ID du canal vocal temporaire
+            temporary_channel_id = new_channel.id
+        
+        # Déplace le membre vers le canal vocal temporaire
+        temporary_channel = guild.get_channel(temporary_channel_id)
+        await member.move_to(temporary_channel)
+        
+    # Vérifie si tous les membres sont sortis du canal vocal temporaire
+    if after.channel is None and temporary_channel_id is not None:
+        guild = member.guild
+        temporary_channel = guild.get_channel(temporary_channel_id)
+        
+        if all(member.voice.channel == 0 for member in temporary_channel.members):
+            # Supprime le canal vocal temporaire
+            await temporary_channel.delete()
+            temporary_channel_id = None
+
 
 @bot.command(pass_context=True, name='help')
 async def help(ctx):
