@@ -11,6 +11,8 @@ intents = discord.Intents().all()
 intents.message_content = True
 intents.guilds = True
 intents.members = True
+intents.typing = False
+intents.presences = True
 
 INIFILE = 'klaybot.ini'
 
@@ -24,8 +26,7 @@ def get_discord_token(inifile):
     config.read(inifile)
     return config['discord']['token']
 
-# Stocke l'ID du canal vocal temporaire
-temporary_channel_id = None
+
 @bot.event
 async def on_ready():
     watch = discord.Activity(type=discord.ActivityType.watching,
@@ -65,38 +66,39 @@ async def clear(ctx, *, amount: int):
     await channel.delete_messages(messages)
     await ctx.send("Notre chat a été nettoyé")
 
+# Stocke l'ID du canal vocal temporaire
+temporary_channels = {}
 @bot.event
 async def on_voice_state_update(member, before, after):
-    global temporary_channel_id
-    
     # Vérifie si le membre s'est connecté au canal vocal spécifié
     if after.channel is not None and after.channel.id == 1130824483905736777:
         guild = member.guild  # Récupère le serveur (guild) où l'événement a eu lieu
         
-        # Vérifie si le canal vocal temporaire existe déjà
-        if temporary_channel_id is None:
-            # Crée un nouveau canal vocal temporaire en dupliquant le canal spécifié
-            original_channel = guild.get_channel(1130824483905736777)
-            new_channel = await original_channel.clone(name=f"{original_channel.name}-{member.name}")
-            
-            # Stocke l'ID du canal vocal temporaire
-            temporary_channel_id = new_channel.id
+        # Obtient les propriétés du canal d'origine
+        original_channel = guild.get_channel(1130824483905736777)
+        
+        # Crée un nouveau canal vocal temporaire avec les mêmes propriétés
+        new_channel = await original_channel.clone(name=f"{original_channel.name}-{member.name}")
         
         # Déplace le membre vers le canal vocal temporaire
-        temporary_channel = guild.get_channel(temporary_channel_id)
-        await member.move_to(temporary_channel)
+        await member.move_to(new_channel)
         
-    # Vérifie si tous les membres sont sortis du canal vocal temporaire
-    if after.channel is None and temporary_channel_id is not None:
-        guild = member.guild
-        temporary_channel = guild.get_channel(temporary_channel_id)
-        
-        if all(member.voice.channel == 0 for member in temporary_channel.members):
-            # Supprime le canal vocal temporaire
-            await temporary_channel.delete()
-            temporary_channel_id = None
-
-
+        # Stocke le canal vocal temporaire et l'utilisateur associé
+        temporary_channels[new_channel.id] = member.id
+    
+    # Vérifie si l'utilisateur a quitté le canal vocal temporaire
+    if before.channel is not None and before.channel.id in temporary_channels:
+        if before.channel.id != 1130824483905736777 and before.channel.id != temporary_channels[before.channel.id]:
+            # Supprime le canal vocal temporaire si l'utilisateur se connecte à un autre canal
+            await before.channel.delete()
+            del temporary_channels[before.channel.id]
+    
+    # Vérifie si le canal vocal temporaire doit être supprimé
+    if after.channel is None and before.channel is not None and before.channel.id in temporary_channels:
+        # Supprime le canal vocal temporaire si l'utilisateur se déconnecte de Discord
+        await before.channel.delete()
+        del temporary_channels[before.channel.id]
+                
 @bot.command(pass_context=True, name='help')
 async def help(ctx):
     author = ctx.message.author
